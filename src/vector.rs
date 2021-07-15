@@ -5,16 +5,11 @@ use std::ops::{Add, Sub};
 pub struct HVector(pub Array1<f64>);
 impl HVector {
     pub fn new(vec: Array1<f64>) -> HVector {
-        assert!(vec.len() == 4);
-        // TODO: assert!(vec[3] == 1.0);
-        HVector(vec)
+        HVector(array![vec[0], vec[1], vec[2], 1.0])
     }
 
     pub fn to_vector3(&self) -> Vector3 {
-        let x = self.0[0]; // TODO: divide by self.0[4]
-        let y = self.0[1]; // TODO: divide by self.0[4]
-        let z = self.0[2]; // TODO: divide by self.0[4]
-        Vector3::new(array![x, y, z])
+        Vector3::new(self.0.clone())
     }
 
     pub fn magnitude_squared(&self) -> f64 {
@@ -25,7 +20,7 @@ impl HVector {
     }
 
     pub fn normalized(&self) -> HVector {
-        self.scale(self.magnitude())
+        self.scale(1.0 / self.magnitude())
     }
 
     pub fn dot(&self, rhs: &HVector) -> f64 {

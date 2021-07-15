@@ -1,12 +1,17 @@
-use crate::{image::Image, ray::Ray, scene::Scene, vector::HVector};
+use crate::{
+    image::{Image, Resolution},
+    ray::Ray,
+    scene::Scene,
+    vector::HVector,
+};
 use ndarray::array;
 
 pub struct Camera {
     position: HVector,
-    resolution: (usize, usize),
+    resolution: Resolution,
 }
 impl Camera {
-    pub fn new(position: HVector, resolution: (usize, usize)) -> Camera {
+    pub fn new(position: HVector, resolution: Resolution) -> Camera {
         Camera {
             position,
             resolution,
@@ -14,7 +19,7 @@ impl Camera {
     }
 
     pub fn generate_image(&self, scene: &Scene, depth: u8) -> Image {
-        let mut image = Image::new(self.resolution);
+        let mut image = Image::new(&self.resolution);
         for (coordinates, pixel) in image.pixels.indexed_iter_mut() {
             let pixel_position = self.get_pixel_position(coordinates);
             let from = self.position.clone();
@@ -25,9 +30,8 @@ impl Camera {
         image
     }
     fn get_pixel_position(&self, (row, column): (usize, usize)) -> HVector {
-        let (height, width) = self.resolution;
-        let row_position = row as f64 / ((width as f64 - 1.0) / 2.0) - 1.0;
-        let column_position = column as f64 / ((height as f64 - 1.0) / 2.0) - 1.0;
+        let row_position = row as f64 / ((self.resolution.width as f64 - 1.0) / 2.0) - 1.0;
+        let column_position = column as f64 / ((self.resolution.height as f64 - 1.0) / 2.0) - 1.0;
         HVector::new(array![row_position, column_position, 0.0, 1.0])
     }
 }

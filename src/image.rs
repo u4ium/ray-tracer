@@ -12,13 +12,18 @@ pub const BLACK: Pixel = Pixel {
     blue: 0.0,
 };
 
+pub struct Resolution {
+    pub height: usize,
+    pub width: usize,
+}
+
 pub struct Image {
     pub pixels: Array2<Pixel>,
 }
 impl Image {
-    pub fn new((width, height): (usize, usize)) -> Image {
+    pub fn new(resolution: &Resolution) -> Image {
         Image {
-            pixels: Array2::from_elem((height, width), BLACK),
+            pixels: Array2::from_elem((resolution.height, resolution.width), BLACK),
         }
     }
 }

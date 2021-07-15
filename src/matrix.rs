@@ -1,4 +1,4 @@
-use ndarray::{array, Array2};
+use ndarray::{array, s, Array2};
 
 use crate::ray::Ray;
 use crate::vector::HVector;
@@ -13,7 +13,7 @@ pub struct AffineTransformation {
 
 pub struct AffineMatrix {
     actual: Array2<f64>,
-    inverse_transpose: Array2<f64>,
+    inverse: Array2<f64>,
 }
 
 impl AffineMatrix {
@@ -76,33 +76,44 @@ impl AffineMatrix {
         ];
         let inverse_rotation = inverse_rotation_y.dot(&inverse_rotation_z);
         let inverse = inverse_scaling.dot(&inverse_rotation.dot(&inverse_translation));
-        let inverse_transpose = inverse.reversed_axes();
-
-        AffineMatrix {
-            actual,
-            inverse_transpose,
-        }
+        AffineMatrix { actual, inverse }
     }
 
     pub fn shift_point(&self, point: &HVector) -> HVector {
-        HVector::new(self.actual.dot(&point.0))
+        HVector::new(self.inverse.dot(&point.0))
+    }
+
+    pub fn shift_vector(&self, vector: &HVector) -> HVector {
+        HVector::new(
+            self.inverse
+                .slice(s![..3, ..3])
+                .dot(&vector.0.slice(s![..3])),
+        )
     }
 
     pub fn shift(&self, ray: &Ray) -> Ray {
         Ray {
             from: self.shift_point(&ray.from),
-            direction: self.shift_point(&ray.direction),
+            direction: self.shift_vector(&ray.direction).normalized(),
         }
     }
 
     pub fn unshift_point(&self, point: &HVector) -> HVector {
-        HVector::new(self.inverse_transpose.dot(&point.0))
+        HVector::new(self.actual.dot(&point.0))
+    }
+
+    pub fn unshift_vector(&self, vector: &HVector) -> HVector {
+        HVector::new(
+            self.actual
+                .slice(s![..3, ..3])
+                .dot(&vector.0.slice(s![..3])),
+        )
     }
 
     pub fn unshift(&self, ray: &Ray) -> Ray {
         Ray {
             from: self.unshift_point(&ray.from),
-            direction: self.unshift_point(&ray.direction),
+            direction: self.unshift_vector(&ray.direction).normalized(),
         }
     }
 }

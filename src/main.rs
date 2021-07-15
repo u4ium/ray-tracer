@@ -1,6 +1,7 @@
 use ndarray::array;
 use ray_tracer::{
     camera::Camera,
+    image::Resolution,
     matrix::AffineTransformation,
     object::{Object, ObjectShape::Sphere},
     ppm::writer::write_to_ppm,
@@ -15,13 +16,19 @@ fn main() -> io::Result<()> {
     let sphere = Object::new(
         Sphere,
         AffineTransformation {
-            scale: [2.0, 4.0, 2.0],
-            position: [1.0, 0.0, 5.0],
+            scale: [1.0, 2.0, 1.0],
+            position: [0.0, 0.0, 3.0],
             orientation: (0.0, 0.0),
         },
     );
     scene.add_object(sphere);
-    let camera = Camera::new(HVector::new(array![0.0, 0.0, -1.0, 1.0]), (32, 16));
+    let camera = Camera::new(
+        HVector::new(array![0.0, 0.0, -1.0]),
+        Resolution {
+            width: 128,
+            height: 72,
+        },
+    );
     let image = camera.generate_image(&scene, 0);
     write_to_ppm(image, "test.ppm")?;
     Ok(())
