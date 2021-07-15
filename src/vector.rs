@@ -1,5 +1,5 @@
-use ndarray::{array, Array1};
-use std::ops::Sub;
+use ndarray::{array, s, Array1};
+use std::ops::{Add, Sub};
 
 #[derive(Clone)]
 pub struct HVector(pub Array1<f64>);
@@ -17,8 +17,25 @@ impl HVector {
         Vector3::new(array![x, y, z])
     }
 
+    pub fn magnitude_squared(&self) -> f64 {
+        self.dot(self)
+    }
     pub fn magnitude(&self) -> f64 {
-        0.0 // TODO
+        self.magnitude_squared().sqrt()
+    }
+
+    pub fn normalized(&self) -> HVector {
+        self.scale(self.magnitude())
+    }
+
+    pub fn dot(&self, rhs: &HVector) -> f64 {
+        self.0.slice(s![..3]).dot(&rhs.0.slice(s![..3]))
+    }
+
+    pub fn scale(&self, factor: f64) -> HVector {
+        let mut v = factor * self.0.clone();
+        v[3] = 1.0;
+        HVector(v)
     }
 }
 
@@ -26,6 +43,15 @@ impl Sub for HVector {
     type Output = HVector;
     fn sub(self, rhs: HVector) -> Self::Output {
         let mut v = self.0 - rhs.0;
+        v[3] = 1.0;
+        HVector(v)
+    }
+}
+
+impl Add for HVector {
+    type Output = HVector;
+    fn add(self, rhs: HVector) -> Self::Output {
+        let mut v = self.0 + rhs.0;
         v[3] = 1.0;
         HVector(v)
     }

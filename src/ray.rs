@@ -1,7 +1,4 @@
-use crate::{
-    scene::Object,
-    vector::{HVector, Vector3},
-};
+use crate::vector::{HVector, Vector3};
 
 pub struct Ray {
     pub from: HVector,
@@ -15,8 +12,9 @@ impl Ray {
             direction: direction.to_homo_vector(),
         }
     }
-    pub fn intersect(&self, object: &Object) -> Option<HVector> {
-        // TODO:
-        None
-    }
+}
+
+pub struct Hit {
+    pub normal: Ray,
+    pub texture_coordinates: [f64; 2],
 }

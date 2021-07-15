@@ -18,7 +18,7 @@ impl Camera {
         for (coordinates, pixel) in image.pixels.indexed_iter_mut() {
             let pixel_position = self.get_pixel_position(coordinates);
             let from = self.position.clone();
-            let direction = pixel_position - from.clone();
+            let direction = (pixel_position - from.clone()).normalized();
             let ray = Ray { from, direction };
             *pixel = scene.trace(&ray, depth);
         }
