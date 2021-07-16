@@ -30,8 +30,8 @@ impl Camera {
         image
     }
     fn get_pixel_position(&self, (row, column): (usize, usize)) -> HVector {
-        let row_position = row as f64 / ((self.resolution.width as f64 - 1.0) / 2.0) - 1.0;
-        let column_position = column as f64 / ((self.resolution.height as f64 - 1.0) / 2.0) - 1.0;
-        HVector::new(array![row_position, column_position, 0.0, 1.0])
+        let row_position = row as f64 / ((self.resolution.height as f64 - 1.0) / 2.0) - 1.0;
+        let column_position = column as f64 / ((self.resolution.width as f64 - 1.0) / 2.0) - 1.0;
+        HVector::new(array![column_position, -row_position, 0.0, 1.0])
     }
 }
