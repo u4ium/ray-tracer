@@ -1,7 +1,11 @@
-use crate::image::Pixel;
-use crate::matrix::{AffineMatrix, AffineTransformation};
 use crate::ray::{Hit, Ray};
 use crate::vector::HVector;
+
+pub mod material;
+use material::Material;
+
+pub mod matrix;
+use matrix::{AffineMatrix, AffineTransformation};
 
 pub enum ObjectShape {
     Sphere,
@@ -12,6 +16,7 @@ use ObjectShape::*;
 pub struct Object {
     matrix: AffineMatrix,
     shape: ObjectShape,
+    material: Material,
 }
 
 const EPSILON: f64 = 0.000000001;
@@ -61,15 +66,23 @@ impl ObjectShape {
                     })
                 }
             }
-            Triangle(p1, p2, p3) => None,
+            Triangle(_p1, _p2, _p3) => None, // TODO
         }
     }
 }
 
 impl Object {
-    pub fn new(shape: ObjectShape, transformation: AffineTransformation) -> Object {
+    pub fn new(
+        shape: ObjectShape,
+        transformation: AffineTransformation,
+        material: Material,
+    ) -> Object {
         let matrix = AffineMatrix::new(transformation);
-        Object { shape, matrix }
+        Object {
+            shape,
+            matrix,
+            material,
+        }
     }
 
     pub fn intersect(&self, ray: &Ray) -> Option<Hit> {
@@ -82,12 +95,8 @@ impl Object {
                 })
             })
     }
-    pub fn get_colour(&self, direction: &HVector, hit: &Hit) -> Pixel {
-        // TODO: Phong illumination model
-        Pixel {
-            red: 0.5,
-            green: 0.0,
-            blue: 0.0,
-        }
+
+    pub fn get_material(&self) -> &Material {
+        &self.material // TODO: replace with get_colour
     }
 }

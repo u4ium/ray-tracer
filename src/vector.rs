@@ -32,6 +32,14 @@ impl HVector {
         v[3] = 1.0;
         HVector(v)
     }
+
+    pub fn reflect(&self, normal: &HVector) -> HVector {
+        self.clone() - normal.scale(2.0 * self.dot(normal))
+    }
+
+    pub fn reverse(&self) -> HVector {
+        self.scale(-1.0)
+    }
 }
 
 impl Sub for HVector {
