@@ -1,7 +1,7 @@
 use crate::object::parsers::common::{float::parse_float, whitespace::tws};
 use nom::{bytes::complete::tag, combinator::opt, sequence::tuple, IResult};
 
-#[derive(Debug, PartialEq)]
+#[derive(Debug, PartialEq, Clone, Copy)]
 pub struct Vertex {
     x: f64,
     y: f64,
