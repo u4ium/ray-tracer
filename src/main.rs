@@ -3,12 +3,12 @@ use ray_tracer::{
     camera::Camera,
     image::{Colour, Resolution},
     light::Light,
-    object::{material::Material, matrix::AffineTransformation, Object, ObjectShape::Sphere},
+    object::{material::Material, matrix::AffineTransformation, Object, ObjectShape::*},
     ppm::writer::write_to_ppm,
     scene::Scene,
     vector::HVector,
 };
-use std::io;
+use std::{f64::consts::PI, io};
 
 fn main() -> io::Result<()> {
     // TODO: get config from command line
@@ -31,8 +31,32 @@ fn main() -> io::Result<()> {
             },
         ),
     );
+    let triangle = Object::new(
+        Triangle(
+            // equilateral
+            HVector::new(array![-1.0, 0.0, 0.0]),
+            HVector::new(array![1.0, 0.0, 0.0]),
+            HVector::new(array![0.0, 3.4641016151377545870548926830117, 0.0]),
+        ),
+        AffineTransformation {
+            scale: [1.0, 1.0, 1.0],
+            position: [-1.0, 0.5, 3.0],
+            orientation: (PI / 6.0, PI / 4.0),
+        },
+        Material::new(
+            0.2,
+            0.2,
+            0.6,
+            0.85,
+            Colour {
+                red: 0.0,
+                green: 1.0,
+                blue: 0.5,
+            },
+        ),
+    );
     let light = Light::new([-3.0, 20.0, 1.0]);
-    let scene = Scene::new(vec![sphere], vec![light]);
+    let scene = Scene::new(vec![sphere, triangle], vec![light]);
     let camera = Camera::new(
         HVector::new(array![0.0, 0.0, -1.0]),
         Resolution {

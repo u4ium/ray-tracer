@@ -12,6 +12,10 @@ impl HVector {
         Vector3::new(self.0.clone())
     }
 
+    pub fn to_3tuple(&self) -> (f64, f64, f64) {
+        (self.0[0], self.0[1], self.0[2])
+    }
+
     pub fn magnitude_squared(&self) -> f64 {
         self.dot(self)
     }
@@ -25,6 +29,13 @@ impl HVector {
 
     pub fn dot(&self, rhs: &HVector) -> f64 {
         self.0.slice(s![..3]).dot(&rhs.0.slice(s![..3]))
+    }
+
+    pub fn cross(&self, rhs: &HVector) -> HVector {
+        let (a1, a2, a3) = self.to_3tuple();
+        let (b1, b2, b3) = rhs.to_3tuple();
+        let (c1, c2, c3) = (a2 * b3 - a3 * b2, a3 * b1 - a1 * b3, a1 * b2 - a2 * b1);
+        HVector(array![c1, c2, c3, 1.0])
     }
 
     pub fn scale(&self, factor: f64) -> HVector {
