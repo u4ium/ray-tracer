@@ -1,7 +1,7 @@
 use ndarray::array;
 
 use crate::{
-    image::{Pixel, WHITE},
+    image::{Colour, WHITE},
     vector::HVector,
 };
 enum LightShape {
@@ -11,7 +11,7 @@ enum LightShape {
 pub struct Light {
     shape: LightShape,
     location: HVector,
-    colour: Pixel,
+    pub colour: Colour,
 }
 
 impl Light {
@@ -25,9 +25,5 @@ impl Light {
 
     pub fn direction_from(&self, point: &HVector) -> HVector {
         (self.location.clone() - point.clone()).normalized()
-    }
-
-    pub fn get_colour(&self) -> Pixel {
-        self.colour
     }
 }

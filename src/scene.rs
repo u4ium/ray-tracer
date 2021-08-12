@@ -1,4 +1,4 @@
-use crate::image::{Pixel, BLACK, WHITE};
+use crate::image::{Colour, BLACK};
 use crate::light::Light;
 use crate::object::Object;
 use crate::ray::{Hit, Ray};
@@ -12,7 +12,7 @@ impl Scene {
     pub fn new(objects: Vec<Object>, lights: Vec<Light>) -> Scene {
         Scene { objects, lights }
     }
-    pub fn trace(&self, ray: &Ray, depth: u8) -> Pixel {
+    pub fn trace(&self, ray: &Ray, depth: u8) -> Colour {
         let mut best: Option<(f64, &Object, Hit)> = None;
         for object in self.objects.iter() {
             match object.intersect(ray) {
@@ -37,31 +37,35 @@ impl Scene {
             None => BLACK,
         }
     }
-    pub fn get_colour(&self, object: &Object, direction: &HVector, hit: &Hit, depth: u8) -> Pixel {
+    pub fn get_colour(&self, object: &Object, direction: &HVector, hit: &Hit, depth: u8) -> Colour {
         //let reflection = if depth == 0 {
         //    BLACK
         //} else {
         //    BLACK // TODO: recurse
         //};
         //let refraction = BLACK; // TODO
-        const IA: Pixel = WHITE;
         let material = object.get_material();
 
         // ambient
-        let ambient_light = IA.scale(material.ambient);
+        let ambient_light = material.colour.scale(material.ambient);
 
         let incident_reversed = direction.reverse();
-        let mut light_contributions: Pixel = BLACK;
+        let mut light_contributions: Colour = BLACK;
         for light in self.lights.iter() {
-            let light_colour = light.get_colour();
-            //diffuse
+            // diffuse
             let light_direction = light.direction_from(&hit.normal.from);
-            let diffuse_factor = material.diffuse * light_direction.dot(&hit.normal.direction);
-            //specular
-            let diffuse_contribution: Pixel = light_colour.scale(diffuse_factor);
-            let specular_factor = material.specular;
-            let specular_contribution: Pixel = light_colour.scale(specular_factor);
-            light_contributions += specular_contribution + diffuse_contribution;
+            let diffuse_factor = light_direction.dot(&hit.normal.direction);
+            if diffuse_factor < 0.0 {
+                continue;
+            }
+            light_contributions += material.colour.scale(material.diffuse * diffuse_factor);
+            // specular
+            let reflected_light = light_direction.reflect(&hit.normal.direction);
+            let specular_factor = incident_reversed.dot(&reflected_light);
+            if specular_factor < 0.0 {
+                continue;
+            }
+            light_contributions += light.colour.scale(material.specular * specular_factor);
         }
         ambient_light + light_contributions.scale(1.0 / self.lights.len() as f64)
     }

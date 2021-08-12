@@ -2,19 +2,19 @@ use ndarray::Array2;
 use std::ops::{Add, AddAssign};
 
 #[derive(Clone, Copy, Debug)]
-pub struct Pixel {
+pub struct Colour {
     pub red: f64,
     pub green: f64,
     pub blue: f64,
 }
 
-pub const BLACK: Pixel = Pixel {
+pub const BLACK: Colour = Colour {
     red: 0.0,
     green: 0.0,
     blue: 0.0,
 };
 
-pub const WHITE: Pixel = Pixel {
+pub const WHITE: Colour = Colour {
     red: 1.0,
     green: 1.0,
     blue: 1.0,
@@ -26,7 +26,7 @@ pub struct Resolution {
 }
 
 pub struct Image {
-    pub pixels: Array2<Pixel>,
+    pub pixels: Array2<Colour>,
 }
 impl Image {
     pub fn new(resolution: &Resolution) -> Image {
@@ -36,32 +36,32 @@ impl Image {
     }
 }
 
-pub struct Colour {
+pub struct Pixel {
     red: u8,
     green: u8,
     blue: u8,
 }
-impl Colour {
+impl Pixel {
     pub fn to_string(&self) -> String {
         format!("{} {} {}", self.red, self.green, self.blue)
     }
 }
 
-impl Pixel {
-    pub fn to_colour(&self) -> Colour {
-        fn colour_from_float_to_int(colour: f64) -> u8 {
-            // TODO: assert!(0.0 >= colour && colour <= 1.0);
+impl Colour {
+    pub fn to_pixel(&self) -> Pixel {
+        fn pixel_from_colour(colour: f64) -> u8 {
+            // TODO: assert!(0.0 >= pixel && pixel <= 1.0);
             (255.0 * colour) as u8
         }
-        Colour {
-            red: colour_from_float_to_int(self.red),
-            green: colour_from_float_to_int(self.green),
-            blue: colour_from_float_to_int(self.blue),
+        Pixel {
+            red: pixel_from_colour(self.red),
+            green: pixel_from_colour(self.green),
+            blue: pixel_from_colour(self.blue),
         }
     }
 
-    pub fn scale(&self, factor: f64) -> Pixel {
-        Pixel {
+    pub fn scale(&self, factor: f64) -> Colour {
+        Colour {
             red: self.red * factor,
             green: self.green * factor,
             blue: self.blue * factor,
@@ -69,11 +69,11 @@ impl Pixel {
     }
 }
 
-impl Add for Pixel {
-    type Output = Pixel;
+impl Add for Colour {
+    type Output = Colour;
 
-    fn add(self, rhs: Pixel) -> Self::Output {
-        Pixel {
+    fn add(self, rhs: Colour) -> Self::Output {
+        Colour {
             red: self.red + rhs.red,
             green: self.green + rhs.green,
             blue: self.blue + rhs.blue,
@@ -81,8 +81,8 @@ impl Add for Pixel {
     }
 }
 
-impl AddAssign for Pixel {
-    fn add_assign(&mut self, rhs: Pixel) {
+impl AddAssign for Colour {
+    fn add_assign(&mut self, rhs: Colour) {
         *self = *self + rhs;
     }
 }

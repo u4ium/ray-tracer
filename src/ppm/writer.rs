@@ -8,9 +8,9 @@ pub fn write_to_ppm(image: Image, filename: &str) -> io::Result<()> {
     let height = image.pixels.nrows();
     write!(image_file, "P3\n{} {}\n255\n", width, height)?;
     for row in image.pixels.rows() {
-        for pixel in row {
-            let colour = pixel.to_colour().to_string();
-            write!(image_file, "{}\t", colour)?;
+        for colour in row {
+            let pixel_string = colour.to_pixel().to_string();
+            write!(image_file, "{}\t", pixel_string)?;
         }
         write!(image_file, "\n")?;
     }

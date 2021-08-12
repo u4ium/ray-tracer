@@ -1,7 +1,7 @@
 use ndarray::array;
 use ray_tracer::{
     camera::Camera,
-    image::Resolution,
+    image::{Colour, Resolution},
     light::Light,
     object::{material::Material, matrix::AffineTransformation, Object, ObjectShape::Sphere},
     ppm::writer::write_to_ppm,
@@ -19,7 +19,17 @@ fn main() -> io::Result<()> {
             position: [1.0, 0.5, 3.0],
             orientation: (0.0, 0.0),
         },
-        Material::new(0.5, 0.3, 0.2, 0.7),
+        Material::new(
+            0.5,
+            0.3,
+            0.2,
+            0.7,
+            Colour {
+                red: 1.0,
+                green: 0.5,
+                blue: 0.5,
+            },
+        ),
     );
     let light = Light::new([-3.0, 20.0, 1.0]);
     let scene = Scene::new(vec![sphere], vec![light]);
