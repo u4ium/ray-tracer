@@ -2,18 +2,30 @@ use ndarray::{array, s, Array1};
 use std::ops::{Add, Sub};
 
 #[derive(Clone)]
-pub struct HVector(pub Array1<f64>);
+pub struct HVector(Array1<f64>);
 impl HVector {
-    pub fn new(vec: Array1<f64>) -> HVector {
+    pub fn new(vec: [f64; 3]) -> HVector {
         HVector(array![vec[0], vec[1], vec[2], 1.0])
     }
 
-    pub fn to_vector3(&self) -> Vector3 {
-        Vector3::new(self.0.clone())
+    pub fn from_array3(vec: Array1<f64>) -> HVector {
+        HVector(array![vec[0], vec[1], vec[2], 1.0])
     }
 
-    pub fn to_3tuple(&self) -> (f64, f64, f64) {
-        (self.0[0], self.0[1], self.0[2])
+    pub fn from_array4(vec: Array1<f64>) -> HVector {
+        HVector(vec)
+    }
+
+    pub fn get(&self) -> &Array1<f64> {
+        &self.0
+    }
+
+    pub fn to_vector3(&self) -> Vector3 {
+        Vector3::new(self.to_array())
+    }
+
+    pub fn to_array(&self) -> [f64; 3] {
+        [self.0[0], self.0[1], self.0[2]]
     }
 
     pub fn magnitude_squared(&self) -> f64 {
@@ -32,10 +44,14 @@ impl HVector {
     }
 
     pub fn cross(&self, rhs: &HVector) -> HVector {
-        let (a1, a2, a3) = self.to_3tuple();
-        let (b1, b2, b3) = rhs.to_3tuple();
-        let (c1, c2, c3) = (a2 * b3 - a3 * b2, a3 * b1 - a1 * b3, a1 * b2 - a2 * b1);
-        HVector(array![c1, c2, c3, 1.0])
+        let [a1, a2, a3] = self.to_array();
+        let [b1, b2, b3] = rhs.to_array();
+        HVector(array![
+            a2 * b3 - a3 * b2,
+            a3 * b1 - a1 * b3,
+            a1 * b2 - a2 * b1,
+            1.0
+        ])
     }
 
     pub fn scale(&self, factor: f64) -> HVector {
@@ -74,23 +90,18 @@ impl Add for HVector {
 #[derive(Clone)]
 pub struct Vector3(pub Array1<f64>);
 impl Vector3 {
-    pub fn new(vec: Array1<f64>) -> Vector3 {
-        assert!(vec.len() == 3);
-        Vector3(vec)
+    pub fn new(vec: [f64; 3]) -> Vector3 {
+        let [x, y, z] = vec;
+        Vector3(array![x, y, z])
     }
     pub fn to_homo_vector(&self) -> HVector {
-        let x = self.0[0];
-        let y = self.0[1];
-        let z = self.0[2];
-        HVector::new(array![x, y, z, 1.0])
+        HVector::new([self.0[0], self.0[1], self.0[2]])
     }
 }
 
 impl Sub for Vector3 {
     type Output = Vector3;
     fn sub(self, rhs: Vector3) -> Self::Output {
-        let mut v = self.0 - rhs.0;
-        v[3] = 1.0;
-        Vector3(v)
+        Vector3(self.0 - rhs.0)
     }
 }

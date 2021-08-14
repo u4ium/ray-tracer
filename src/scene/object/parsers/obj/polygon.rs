@@ -1,4 +1,4 @@
-use crate::object::parsers::common::{integer::parse_integer, whitespace::tws};
+use crate::scene::object::parsers::common::{integer::parse_integer, whitespace::tws};
 use nom::{
     branch::alt,
     bytes::complete::tag,

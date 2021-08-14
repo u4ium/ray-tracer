@@ -1,4 +1,4 @@
-use crate::object::parsers::common::{float::parse_float, whitespace::tws};
+use crate::scene::object::parsers::common::{float::parse_float, whitespace::tws};
 use nom::{bytes::complete::tag, sequence::tuple, IResult};
 
 #[derive(Debug, PartialEq, Clone, Copy)]

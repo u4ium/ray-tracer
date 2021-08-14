@@ -1,9 +1,6 @@
 use ndarray::array;
 
-use crate::{
-    image::{Colour, WHITE},
-    vector::HVector,
-};
+use crate::{image::Colour, vector::HVector};
 enum LightShape {
     PointLight,
 }
@@ -18,8 +15,8 @@ impl Light {
     pub fn new(point: [f64; 3]) -> Light {
         Light {
             shape: LightShape::PointLight,
-            location: HVector::new(array![point[0], point[1], point[2]]),
-            colour: WHITE,
+            location: HVector::new([point[0], point[1], -point[2]]),
+            colour: Colour::WHITE,
         }
     }
 

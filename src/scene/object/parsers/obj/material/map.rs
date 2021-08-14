@@ -1,4 +1,4 @@
-use crate::object::parsers::common::{
+use crate::scene::object::parsers::common::{
     filename::{parse_filenames, recognize_filename},
     identifier::parse_identifier,
 };

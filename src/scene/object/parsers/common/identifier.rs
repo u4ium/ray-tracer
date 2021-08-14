@@ -1,4 +1,4 @@
-use crate::object::parsers::common::whitespace::tws;
+use crate::scene::object::parsers::common::whitespace::tws;
 use nom::{
     bytes::complete::{is_not, tag},
     sequence::preceded,

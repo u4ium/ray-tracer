@@ -1,7 +1,5 @@
 pub mod camera;
 pub mod image;
-pub mod light;
-pub mod object;
 pub mod ppm;
 pub mod ray;
 pub mod scene;

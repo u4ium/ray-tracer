@@ -1,4 +1,5 @@
 use crate::image::Colour;
+use std::default::Default;
 
 const EPSILON: f64 = 0.00000000001;
 
@@ -11,6 +12,14 @@ pub struct Material {
 }
 
 impl Material {
+    pub const DEFAULT: Material = Material {
+        ambient: 1.0 / 3.0,
+        diffuse: 1.0 / 3.0,
+        specular: 1.0 / 3.0,
+        shininess: 4.0,
+        colour: Colour::WHITE,
+    };
+
     pub fn new(
         ambient: f64,
         diffuse: f64,
@@ -27,5 +36,11 @@ impl Material {
             shininess,
             colour,
         }
+    }
+}
+
+impl Default for Material {
+    fn default() -> Material {
+        Material::DEFAULT
     }
 }

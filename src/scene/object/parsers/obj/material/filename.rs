@@ -1,4 +1,4 @@
-use crate::object::parsers::common::filename::{parse_filenames, recognize_filename};
+use crate::scene::object::parsers::common::filename::{parse_filenames, recognize_filename};
 use nom::IResult;
 
 fn recognize_material_filename(input: &str) -> IResult<&str, &str> {

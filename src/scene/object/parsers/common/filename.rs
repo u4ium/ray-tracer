@@ -1,4 +1,4 @@
-use crate::object::parsers::common::whitespace::tws;
+use crate::scene::object::parsers::common::whitespace::tws;
 use nom::{
     bytes::complete::{is_not, tag, tag_no_case, take_while, take_while1},
     combinator::{all_consuming, recognize},

@@ -1,4 +1,4 @@
-use crate::object::parsers::common::identifier::parse_identifier;
+use crate::scene::object::parsers::common::identifier::parse_identifier;
 use nom::IResult;
 
 pub mod filename;

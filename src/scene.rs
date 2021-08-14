@@ -1,56 +1,44 @@
-use crate::image::{Colour, BLACK};
-use crate::light::Light;
-use crate::object::Object;
-use crate::ray::{Hit, Ray};
-use crate::vector::HVector;
+pub mod light;
+pub mod object;
+use self::{
+    light::Light,
+    object::{intersection::find_closest_intersection, Object},
+};
+use crate::{
+    image::Colour,
+    ray::{Hit, Ray},
+    vector::HVector,
+};
 
 pub struct Scene {
     objects: Vec<Object>,
     lights: Vec<Light>,
 }
+
 impl Scene {
     pub fn new(objects: Vec<Object>, lights: Vec<Light>) -> Scene {
         Scene { objects, lights }
     }
     pub fn trace(&self, ray: &Ray, depth: u8) -> Colour {
-        let mut best: Option<(f64, &Object, Hit)> = None;
-        for object in self.objects.iter() {
-            match object.intersect(ray) {
-                Some(hit) => {
-                    let distance = (hit.normal.from.clone() - ray.from.clone()).magnitude_squared();
-                    best = match best {
-                        None => Some((distance, object, hit)),
-                        Some((d, o, h)) => {
-                            if d > distance {
-                                Some((distance, object, hit))
-                            } else {
-                                Some((d, o, h))
-                            }
-                        }
-                    };
-                }
-                None => {}
-            }
-        }
-        match best {
-            Some((_, object, hit)) => self.get_colour(object, &ray.direction, &hit, depth),
-            None => BLACK,
+        match find_closest_intersection(&self.objects, ray) {
+            Some(hit) => self.get_colour(&ray.direction, &hit, depth),
+            None => Colour::BLACK,
         }
     }
-    pub fn get_colour(&self, object: &Object, direction: &HVector, hit: &Hit, depth: u8) -> Colour {
+    pub fn get_colour(&self, direction: &HVector, hit: &Hit, depth: u8) -> Colour {
         //let reflection = if depth == 0 {
-        //    BLACK
+        //    Colour::BLACK
         //} else {
-        //    BLACK // TODO: recurse
+        //    Colour::BLACK // TODO: recurse
         //};
-        //let refraction = BLACK; // TODO
-        let material = object.get_material();
+        //let refraction = Colour::BLACK; // TODO
+        let material = hit.material.unwrap(); // PANIC if hit has no material
 
         // ambient
         let ambient_light = material.colour.scale(material.ambient);
 
         let incident_reversed = direction.reverse();
-        let mut light_contributions: Colour = BLACK;
+        let mut light_contributions = Colour::BLACK;
         for light in self.lights.iter() {
             // diffuse
             let light_direction = light.direction_from(&hit.normal.from);

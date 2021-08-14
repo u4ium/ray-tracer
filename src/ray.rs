@@ -1,4 +1,7 @@
-use crate::vector::{HVector, Vector3};
+use crate::{
+    scene::object::material::Material,
+    vector::{HVector, Vector3},
+};
 
 pub struct Ray {
     pub from: HVector,
@@ -14,7 +17,8 @@ impl Ray {
     }
 }
 
-pub struct Hit {
+pub struct Hit<'a> {
     pub normal: Ray,
     pub texture_coordinates: [f64; 2],
+    pub material: Option<&'a Material>,
 }

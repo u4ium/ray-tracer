@@ -1,4 +1,4 @@
-use crate::object::parsers::common::integer::decimal;
+use crate::scene::object::parsers::common::integer::decimal;
 use nom::{
     branch::alt,
     character::complete::{char, one_of},

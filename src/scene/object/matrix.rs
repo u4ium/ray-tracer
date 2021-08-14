@@ -1,4 +1,5 @@
 use ndarray::{array, s, Array2};
+use std::default::Default;
 
 use crate::ray::Ray;
 use crate::vector::HVector;
@@ -9,6 +10,20 @@ pub struct AffineTransformation {
     pub scale: [f64; 3],
     pub position: [f64; 3],
     pub orientation: (Angle, Angle),
+}
+
+impl AffineTransformation {
+    const DEFAULT: AffineTransformation = AffineTransformation {
+        scale: [1.0, 1.0, 1.0],
+        position: [0.0, 0.0, 5.0],
+        orientation: (0.0, 0.0),
+    };
+}
+
+impl Default for AffineTransformation {
+    fn default() -> AffineTransformation {
+        AffineTransformation::DEFAULT
+    }
 }
 
 pub struct AffineMatrix {
@@ -43,7 +58,7 @@ impl AffineMatrix {
         let translation = array![
             [1.0, 0.0, 0.0, position[0]],
             [0.0, 1.0, 0.0, position[1]],
-            [0.0, 0.0, 1.0, position[2]],
+            [0.0, 0.0, 1.0, -position[2]],
             [0.0, 0.0, 0.0, 1.0],
         ];
         let actual = translation.dot(&rotation).dot(&scaling);
@@ -57,7 +72,7 @@ impl AffineMatrix {
         let inverse_translation = array![
             [1.0, 0.0, 0.0, -position[0]],
             [0.0, 1.0, 0.0, -position[1]],
-            [0.0, 0.0, 1.0, -position[2]],
+            [0.0, 0.0, 1.0, position[2]],
             [0.0, 0.0, 0.0, 1.0],
         ];
         let arz = -rz;
@@ -80,14 +95,14 @@ impl AffineMatrix {
     }
 
     pub fn shift_point(&self, point: &HVector) -> HVector {
-        HVector::new(self.inverse.dot(&point.0))
+        HVector::from_array4(self.inverse.dot(point.get()))
     }
 
     pub fn shift_vector(&self, vector: &HVector) -> HVector {
-        HVector::new(
+        HVector::from_array3(
             self.inverse
                 .slice(s![..3, ..3])
-                .dot(&vector.0.slice(s![..3])),
+                .dot(&vector.get().slice(s![..3])),
         )
     }
 
@@ -99,14 +114,14 @@ impl AffineMatrix {
     }
 
     pub fn unshift_point(&self, point: &HVector) -> HVector {
-        HVector::new(self.actual.dot(&point.0))
+        HVector::from_array4(self.actual.dot(point.get()))
     }
 
     pub fn unshift_vector(&self, vector: &HVector) -> HVector {
-        HVector::new(
+        HVector::from_array3(
             self.actual
                 .slice(s![..3, ..3])
-                .dot(&vector.0.slice(s![..3])),
+                .dot(&vector.get().slice(s![..3])),
         )
     }
 

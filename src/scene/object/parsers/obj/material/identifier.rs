@@ -1,4 +1,4 @@
-use crate::object::parsers::common::identifier::parse_identifier;
+use crate::scene::object::parsers::common::identifier::parse_identifier;
 use nom::IResult;
 
 pub fn parse_material_identifier(input: &str) -> IResult<&str, &str> {
